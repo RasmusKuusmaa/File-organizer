@@ -1,0 +1,1 @@
+A lightweight Windows desktop application built with WPF (.NET 9) that organizes files in a folder by type. Designed using the MVVM pattern, it provides a File Explorer-like view with file icons and easy folder selection.
