@@ -36,5 +36,7 @@
             </ListView.View>
         </ListView>
 
+        <Button Content="Organize Files" Command="{Binding MoveFilesCommand}" Margin="0,5"/>
+
     </StackPanel>
 </Window>
