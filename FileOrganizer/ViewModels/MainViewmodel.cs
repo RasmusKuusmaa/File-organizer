@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using FileOrganizer.helpers;
 using FileOrganizer.Models;
 using FileOrganizer.helpers;
-using FileOrganizer.Models.FileOrganizer.Models;
+
 
 namespace FileOrganizer.ViewModels
 {
