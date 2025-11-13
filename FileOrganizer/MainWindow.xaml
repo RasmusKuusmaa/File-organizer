@@ -6,48 +6,294 @@
         xmlns:local="clr-namespace:FileOrganizer"
         xmlns:vm="clr-namespace:FileOrganizer.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="File Organizer" Height="600" Width="900"
+        Background="#F5F5F7"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#007AFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#0051D5"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#CCCCCC"/>
+                    <Setter Property="Foreground" Value="#888888"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#E8E8ED"/>
+            <Setter Property="Foreground" Value="#1D1D1F"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#D1D1D6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D1D1D6"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="2"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernCheckBox" TargetType="CheckBox">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#1D1D1F"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ListViewItem">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="0"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                                Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#F0F0F5"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#007AFF"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="True"/>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="Border" Property="Background" Value="#0051D5"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
-    <StackPanel Margin="10">
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-            <Button Content="Select Folder" Command="{Binding SelectFolderCommand}" Width="120"/>
-            <CheckBox Content="Organize All Files" IsChecked="{Binding OrganizeAll}" Margin="10,0,0,0"/>
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,25">
+            <TextBlock Text="File Organizer"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#1D1D1F"
+                       Margin="0,0,0,5"/>
+            <TextBlock Text="Organize your files quickly and efficiently"
+                       FontSize="14"
+                       Foreground="#86868B"/>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-            <ListBox Width="120" Height="100" ItemsSource="{Binding FileTypes}" SelectionMode="Multiple"
-                SelectionChanged="ListBox_SelectionChanged"/>
-            <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
-                <TextBox Width="100" Text="{Binding CustomFileType}"/>
-                <Button Content="Add" Command="{Binding AddCustomFileTypeCommand}" Margin="5,0,0,0"/>
-            </StackPanel>
-            <Button Content="Organize Files" Command="{Binding MoveFilesCommand}" Width="120" Margin="10,0,0,0"/>
-        </StackPanel>
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-        <ListView ItemsSource="{Binding Files}" Height="300">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="30">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding Icon}" Width="16" Height="16"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
-                    <GridViewColumn Header="Type" Width="100">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
-    </StackPanel>
+                <StackPanel Grid.Column="0">
+                    <Button Content="Select Folder"
+                            Command="{Binding SelectFolderCommand}"
+                            Style="{StaticResource ModernButton}"
+                            Width="140"
+                            HorizontalAlignment="Left"
+                            Margin="0,0,0,15"/>
 
+                    <CheckBox Content="Organize All Files"
+                              IsChecked="{Binding OrganizeAll}"
+                              Style="{StaticResource ModernCheckBox}"
+                              Margin="0,0,0,15"/>
 
+                    <TextBlock Text="Filter by File Type (optional)"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Foreground="#86868B"
+                               Margin="0,5,0,8"/>
+                    <ListBox Width="200"
+                             Height="100"
+                             ItemsSource="{Binding FileTypes}"
+                             SelectionMode="Multiple"
+                             SelectionChanged="ListBox_SelectionChanged"
+                             BorderBrush="#D1D1D6"
+                             HorizontalAlignment="Left"
+                             Background="White"/>
+
+                    <TextBlock Text="Add Custom File Type"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Foreground="#86868B"
+                               Margin="0,15,0,8"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Width="120"
+                                 Text="{Binding CustomFileType}"
+                                 Style="{StaticResource ModernTextBox}"/>
+                        <Button Content="Add"
+                                Command="{Binding AddCustomFileTypeCommand}"
+                                Style="{StaticResource SecondaryButton}"
+                                Margin="10,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                        Content="Organize Files"
+                        Command="{Binding MoveFilesCommand}"
+                        Style="{StaticResource ModernButton}"
+                        Width="140"
+                        Height="45"
+                        VerticalAlignment="Top"
+                        Margin="20,0,0,0"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Style="{StaticResource Card}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                    <TextBlock Text="Files to Organize"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#1D1D1F"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="(Select files to organize, or use 'Organize All Files')"
+                               FontSize="12"
+                               Foreground="#86868B"
+                               Margin="10,0,0,0"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <ListView Grid.Row="1"
+                          ItemsSource="{Binding Files}"
+                          SelectionMode="Extended"
+                          BorderThickness="0"
+                          Background="Transparent">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="45">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Icon}"
+                                               Width="24"
+                                               Height="24"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="File Name"
+                                            DisplayMemberBinding="{Binding Name}"
+                                            Width="400">
+                                <GridViewColumn.HeaderContainerStyle>
+                                    <Style TargetType="GridViewColumnHeader">
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Setter Property="Foreground" Value="#1D1D1F"/>
+                                        <Setter Property="FontSize" Value="13"/>
+                                        <Setter Property="Padding" Value="5,10"/>
+                                    </Style>
+                                </GridViewColumn.HeaderContainerStyle>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Path" Width="350">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Path}"
+                                                   Foreground="#86868B"
+                                                   FontSize="12"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                                <GridViewColumn.HeaderContainerStyle>
+                                    <Style TargetType="GridViewColumnHeader">
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Setter Property="Foreground" Value="#1D1D1F"/>
+                                        <Setter Property="FontSize" Value="13"/>
+                                        <Setter Property="Padding" Value="5,10"/>
+                                    </Style>
+                                </GridViewColumn.HeaderContainerStyle>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </Border>
+    </Grid>
 </Window>

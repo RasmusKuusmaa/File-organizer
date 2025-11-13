@@ -75,10 +75,7 @@ namespace FileOrganizer.ViewModels
 
             foreach (var file in Directory.GetFiles(FolderPath))
             {
-                if (OrganizeAll || SelectedFileTypes.Any(t => Path.GetExtension(file).Equals(t, StringComparison.OrdinalIgnoreCase)))
-                {
-                    Files.Add(new FileItem(file));
-                }
+                Files.Add(new FileItem(file));
             }
         }
 
