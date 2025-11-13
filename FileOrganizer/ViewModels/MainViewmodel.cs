@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using System.Windows.Forms;
 using FileOrganizer.helpers;
 using FileOrganizer.Models;
 using FileOrganizer.helpers;
+using FileOrganizer.Models.FileOrganizer.Models;
 
 namespace FileOrganizer.ViewModels
 {
@@ -22,10 +24,11 @@ namespace FileOrganizer.ViewModels
         public string FileType
         {
             get => _fileType;
-            set { _fileType = value; OnProperttychanged(); LoadFilesByType(); }
+            set { _fileType = value; OnProperttychanged(); LoadFolderContents(); }
         }
 
         public ObservableCollection<FileItem> Files { get; set; } = new();
+
 
         public ICommand SelectFolderCommand { get; }
         public ICommand MoveFilesCommand { get; }
@@ -34,29 +37,6 @@ namespace FileOrganizer.ViewModels
         {
             SelectFolderCommand = new RelayCommand(o => SelectFolder());
             MoveFilesCommand = new RelayCommand(o => MoveFiles(), o => Files.Count > 0);
-
-        }
-        private void MoveFiles()
-        {
-            if (!Directory.Exists(FolderPath)) return;
-
-            foreach (var fileItem in Files.ToList()) 
-            {
-                var extension = Path.GetExtension(fileItem.FilePath).TrimStart('.').ToUpper();
-                var targetDir = Path.Combine(FolderPath, extension);
-
-                if (!Directory.Exists(targetDir))
-                    Directory.CreateDirectory(targetDir);
-
-                var targetPath = Path.Combine(targetDir, Path.GetFileName(fileItem.FilePath));
-
-                if (!File.Exists(targetPath))
-                {
-                    File.Move(fileItem.FilePath, targetPath);
-                }
-            }
-
-            LoadFilesByType();
         }
 
         private void SelectFolder()
@@ -65,15 +45,20 @@ namespace FileOrganizer.ViewModels
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 FolderPath = dialog.SelectedPath;
-                LoadFilesByType();
+                LoadFolderContents();
             }
         }
 
-        private void LoadFilesByType()
+        private void LoadFolderContents()
         {
             if (!Directory.Exists(FolderPath)) return;
 
             Files.Clear();
+            foreach (var dir in Directory.GetDirectories(FolderPath))
+            {
+                Files.Add(new FileItem(dir, true));
+            }
+
             foreach (var file in Directory.GetFiles(FolderPath))
             {
                 if (string.IsNullOrEmpty(FileType) || Path.GetExtension(file).Equals(FileType, StringComparison.OrdinalIgnoreCase))
@@ -81,6 +66,30 @@ namespace FileOrganizer.ViewModels
                     Files.Add(new FileItem(file));
                 }
             }
+        }
+
+        private void MoveFiles()
+        {
+            if (!Directory.Exists(FolderPath)) return;
+
+            foreach (var fileItem in Files.Where(f => !f.IsFolder).ToList())
+            {
+                var extension = Path.GetExtension(fileItem.Path).TrimStart('.').ToUpper();
+                if (string.IsNullOrEmpty(extension))
+                    extension = "OTHER";
+
+                var targetDir = Path.Combine(FolderPath, extension);
+
+                if (!Directory.Exists(targetDir))
+                    Directory.CreateDirectory(targetDir);
+
+                var targetPath = Path.Combine(targetDir, Path.GetFileName(fileItem.Path));
+
+                if (!File.Exists(targetPath))
+                    File.Move(fileItem.Path, targetPath);
+            }
+
+            LoadFolderContents();
         }
     }
 }
