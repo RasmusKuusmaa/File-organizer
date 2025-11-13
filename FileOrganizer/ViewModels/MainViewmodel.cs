@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Forms;
-using FileOrganizer.helpers;
 using FileOrganizer.Models;
-using FileOrganizer.helpers;
+using FileOrganizer.Helpers;
 
 namespace FileOrganizer.ViewModels
 {
@@ -16,14 +15,14 @@ namespace FileOrganizer.ViewModels
         public string FolderPath
         {
             get => _folderPath;
-            set { _folderPath = value; OnProperttychanged(); }
+            set { _folderPath = value; OnPropertychanged(); }
         }
 
         private string _fileType;
         public string FileType
         {
             get => _fileType;
-            set { _fileType = value; OnProperttychanged(); LoadFolderContents(); }
+            set { _fileType = value; OnPropertychanged(); LoadFolderContents(); }
         }
 
         public ObservableCollection<FileItem> Files { get; set; } = new();

@@ -11,7 +11,7 @@ namespace FileOrganizer.ViewModels
     public class BaseViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnProperttychanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertychanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
