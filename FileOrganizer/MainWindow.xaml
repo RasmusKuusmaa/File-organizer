@@ -4,9 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileOrganizer"
+        xmlns:vm="clr-namespace:FileOrganizer.ViewModels"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+    <Window.DataContext>
+        <vm:MainViewmodel/>
+    </Window.DataContext>
+    <StackPanel Margin="10">
+        <TextBox Text="{Binding FolderPath}" IsReadOnly="True"/>
+        <Button Content="Select Folder" Command="{Binding SelectFolderCommand}" Margin="0, 5"/>
+    </StackPanel>
 </Window>
