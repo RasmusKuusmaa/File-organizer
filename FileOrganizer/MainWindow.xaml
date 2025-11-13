@@ -8,12 +8,33 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.DataContext>
-        <vm:MainViewmodel/>
+        <vm:MainViewModel/>
     </Window.DataContext>
     <StackPanel Margin="10">
         <TextBox Text="{Binding FolderPath}" IsReadOnly="True"/>
         <Button Content="Select Folder" Command="{Binding SelectFolderCommand}" Margin="0, 5"/>
 
-        <ListBox  ItemsSource="{Binding Files}" Height="200" Margin="0 5"/>
+        <ListView ItemsSource="{Binding Files}" Height="300" Margin="0,5">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="30">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding Icon}" Width="16" Height="16"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="File Name" DisplayMemberBinding="{Binding FileName}" Width="200"/>
+                    <GridViewColumn Header="Type" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FilePath}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
     </StackPanel>
 </Window>
