@@ -13,5 +13,7 @@
     <StackPanel Margin="10">
         <TextBox Text="{Binding FolderPath}" IsReadOnly="True"/>
         <Button Content="Select Folder" Command="{Binding SelectFolderCommand}" Margin="0, 5"/>
+
+        <ListBox  ItemsSource="{Binding Files}" Height="200" Margin="0 5"/>
     </StackPanel>
 </Window>
