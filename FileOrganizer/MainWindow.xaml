@@ -35,7 +35,12 @@
                 </GridView>
             </ListView.View>
         </ListView>
-
+        <StackPanel Orientation="Horizontal" Margin="0,5">
+            <Button Content="Select Folder" Command="{Binding SelectFolderCommand}" Width="100"/>
+            <TextBox Width="100" Margin="5,0,0,0" Text="{Binding FileType, UpdateSourceTrigger=PropertyChanged}" 
+            />
+            <Button Content="Organize Files" Command="{Binding MoveFilesCommand}" Width="120" Margin="5,0,0,0"/>
+        </StackPanel>
 
         <Button Content="Organize Files" Command="{Binding MoveFilesCommand}" Margin="0,5"/>
 
