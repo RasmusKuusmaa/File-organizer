@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using FileOrganizer.ViewModels;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,5 +20,13 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+    }
+
+    private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (DataContext is MainViewModel vm)
+        {
+            vm.UpdateSelectedFileTypes(((System.Windows.Controls.ListBox)sender).SelectedItems);
+        }
     }
 }

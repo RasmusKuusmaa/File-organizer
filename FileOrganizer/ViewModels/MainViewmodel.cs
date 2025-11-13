@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Forms;
-using FileOrganizer.Models;
 using FileOrganizer.Helpers;
+using FileOrganizer.Models;
 
 namespace FileOrganizer.ViewModels
 {
@@ -15,24 +15,35 @@ namespace FileOrganizer.ViewModels
         public string FolderPath
         {
             get => _folderPath;
-            set { _folderPath = value; OnPropertychanged(); }
+            set { _folderPath = value; OnPropertyChanged(); }
         }
 
-        private string _fileType;
-        public string FileType
+        private bool _organizeAll;
+        public bool OrganizeAll
         {
-            get => _fileType;
-            set { _fileType = value; OnPropertychanged(); LoadFolderContents(); }
+            get => _organizeAll;
+            set { _organizeAll = value; OnPropertyChanged(); LoadFolderContents(); }
         }
 
         public ObservableCollection<FileItem> Files { get; set; } = new();
+        public ObservableCollection<string> FileTypes { get; set; } = new() { ".txt", ".pdf", ".docx", ".xlsx", ".jpg", ".png" };
+        public ObservableCollection<string> SelectedFileTypes { get; set; } = new();
+
+        private string _customFileType;
+        public string CustomFileType
+        {
+            get => _customFileType;
+            set { _customFileType = value; OnPropertyChanged(); }
+        }
 
         public ICommand SelectFolderCommand { get; }
+        public ICommand AddCustomFileTypeCommand { get; }
         public ICommand MoveFilesCommand { get; }
 
         public MainViewModel()
         {
             SelectFolderCommand = new RelayCommand(o => SelectFolder());
+            AddCustomFileTypeCommand = new RelayCommand(o => AddCustomFileType());
             MoveFilesCommand = new RelayCommand(o => MoveFiles(), o => Files.Count > 0);
         }
 
@@ -44,6 +55,13 @@ namespace FileOrganizer.ViewModels
                 FolderPath = dialog.SelectedPath;
                 LoadFolderContents();
             }
+        }
+        public void UpdateSelectedFileTypes(System.Collections.IList selected)
+        {
+            SelectedFileTypes.Clear();
+            foreach (var item in selected)
+                SelectedFileTypes.Add(item.ToString());
+            LoadFolderContents();
         }
 
         private void LoadFolderContents()
@@ -57,8 +75,20 @@ namespace FileOrganizer.ViewModels
 
             foreach (var file in Directory.GetFiles(FolderPath))
             {
-                if (string.IsNullOrEmpty(FileType) || Path.GetExtension(file).Equals(FileType, StringComparison.OrdinalIgnoreCase))
+                if (OrganizeAll || SelectedFileTypes.Any(t => Path.GetExtension(file).Equals(t, StringComparison.OrdinalIgnoreCase)))
+                {
                     Files.Add(new FileItem(file));
+                }
+            }
+        }
+
+        private void AddCustomFileType()
+        {
+            if (!string.IsNullOrEmpty(CustomFileType) && !SelectedFileTypes.Contains(CustomFileType))
+            {
+                SelectedFileTypes.Add(CustomFileType.StartsWith(".") ? CustomFileType : "." + CustomFileType);
+                CustomFileType = string.Empty;
+                LoadFolderContents();
             }
         }
 
@@ -68,7 +98,7 @@ namespace FileOrganizer.ViewModels
 
             foreach (var fileItem in Files.Where(f => !f.IsFolder).ToList())
             {
-                if (!string.IsNullOrEmpty(FileType) && !Path.GetExtension(fileItem.Path).Equals(FileType, StringComparison.OrdinalIgnoreCase))
+                if (!OrganizeAll && !SelectedFileTypes.Any(t => Path.GetExtension(fileItem.Path).Equals(t, StringComparison.OrdinalIgnoreCase)))
                     continue;
 
                 var extension = Path.GetExtension(fileItem.Path).TrimStart('.').ToUpper();

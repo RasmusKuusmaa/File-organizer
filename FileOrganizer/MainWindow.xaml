@@ -11,10 +11,22 @@
         <vm:MainViewModel/>
     </Window.DataContext>
     <StackPanel Margin="10">
-        <TextBox Text="{Binding FolderPath}" IsReadOnly="True"/>
-        <Button Content="Select Folder" Command="{Binding SelectFolderCommand}" Margin="0, 5"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+            <Button Content="Select Folder" Command="{Binding SelectFolderCommand}" Width="120"/>
+            <CheckBox Content="Organize All Files" IsChecked="{Binding OrganizeAll}" Margin="10,0,0,0"/>
+        </StackPanel>
 
-        <ListView ItemsSource="{Binding Files}" Height="300" Margin="0,5">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+            <ListBox Width="120" Height="100" ItemsSource="{Binding FileTypes}" SelectionMode="Multiple"
+                SelectionChanged="ListBox_SelectionChanged"/>
+            <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                <TextBox Width="100" Text="{Binding CustomFileType}"/>
+                <Button Content="Add" Command="{Binding AddCustomFileTypeCommand}" Margin="5,0,0,0"/>
+            </StackPanel>
+            <Button Content="Organize Files" Command="{Binding MoveFilesCommand}" Width="120" Margin="10,0,0,0"/>
+        </StackPanel>
+
+        <ListView ItemsSource="{Binding Files}" Height="300">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="30">
@@ -35,14 +47,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <StackPanel Orientation="Horizontal" Margin="0,5">
-            <Button Content="Select Folder" Command="{Binding SelectFolderCommand}" Width="100"/>
-            <TextBox Width="100" Margin="5,0,0,0" Text="{Binding FileType, UpdateSourceTrigger=PropertyChanged}" 
-            />
-            <Button Content="Organize Files" Command="{Binding MoveFilesCommand}" Width="120" Margin="5,0,0,0"/>
-        </StackPanel>
-
-        <Button Content="Organize Files" Command="{Binding MoveFilesCommand}" Margin="0,5"/>
-
     </StackPanel>
+
+
 </Window>
